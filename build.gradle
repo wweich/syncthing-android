@@ -8,10 +8,12 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:1.2.3'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.11.3'
+        classpath "jp.leafytree.gradle:gradle-android-scala-plugin:1.4"
     }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'jp.leafytree.android-scala'
 apply plugin: 'com.github.ben-manes.versions'
 
 repositories {
@@ -26,9 +28,12 @@ repositories {
 
 dependencies {
     compile 'eu.chainfire:libsuperuser:1.0.0.201504231659'
-    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:appcompat-v7:22.1.0'
     compile 'com.android.support:support-v4-preferencefragment:1.0.0@aar'
+    compile 'com.android.support:multidex:1.0.1'
+    compile "org.scala-lang:scala-library:2.11.7"
     androidTestCompile 'com.squareup.okhttp:mockwebserver:2.4.0'
+    androidTestCompile "com.android.support:multidex-instrumentation:1.0.1", { exclude module: "multidex" }
 }
 
 preBuild {
@@ -47,17 +52,14 @@ android {
         targetSdkVersion 22
         versionCode 71
         versionName "0.6.5"
+        multiDexEnabled true
         testApplicationId 'com.nutomic.syncthingandroid.test'
-        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
         testHandleProfiling true
         testFunctionalTest true
+        testInstrumentationRunner "com.android.test.runner.MultiDexTestRunner"
     }
 
-    sourceSets {
-        main {
-            jniLibs.srcDir file("libs/")
-        }
-    }
+    sourceSets.main.jniLibs.srcDir file("libs/")
 
     signingConfigs {
         release {
@@ -85,20 +87,34 @@ android {
         }
     }
 
+    flavorDimensions "abi", "minsdk"
+
     productFlavors {
+        // Increasing minSdkVersion reduces compilation time for MultiDex.
+        dev {
+            dimension "minsdk"
+            minSdkVersion 21
+        }
+        rel {
+            dimension "minsdk"
+            minSdkVersion 15
+        }
         x86 {
+            dimension "abi"
             versionCode Integer.parseInt("4" + defaultConfig.versionCode)
             ndk {
                 abiFilter "x86"
             }
         }
-        armeabi {
+        arm {
+            dimension "abi"
             versionCode Integer.parseInt("3" + defaultConfig.versionCode)
             ndk {
                 abiFilter "armeabi"
             }
         }
         fat {
+            dimension "abi"
             versionCode Integer.parseInt("0" + defaultConfig.versionCode)
         }
     }
