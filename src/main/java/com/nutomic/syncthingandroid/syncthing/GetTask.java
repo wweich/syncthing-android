@@ -37,6 +37,8 @@ public class GetTask extends AsyncTask<String, Void, String> {
     public static final String URI_DEVICEID    = "/rest/svc/deviceid";
     public static final String URI_REPORT      = "/rest/svc/report";
 
+    public static final String URI_EVENTS = "/rest/events";
+
     private String mHttpsCertPath;
 
     public GetTask(String httpsCertPath) {

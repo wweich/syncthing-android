@@ -336,6 +336,9 @@ public class SyncthingService extends Service implements
                 return;
             }
 
+            // TODO
+            EventApi events = new EventApi(SyncthingService.this, urlAndKey.first, urlAndKey.second,
+                    mGuiUser, mGuiPassword);
             mApi = new RestApi(SyncthingService.this, urlAndKey.first, urlAndKey.second,
                     mGuiUser, mGuiPassword,
                     new RestApi.OnApiAvailableListener() {
